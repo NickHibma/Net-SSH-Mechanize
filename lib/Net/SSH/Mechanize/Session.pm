@@ -11,8 +11,8 @@ extends 'AnyEvent::Subprocess::Running';
 
 my $passwd_prompt_re = qr/assword:\s*/;
 
-my $initial_prompt_re = qr/^.*?\Q$ \E$/m;
-my $sudo_initial_prompt_re = qr/^.*?\Q$ \E$/m;
+my $initial_prompt_re = qr/^.*?(\$|#) $/m;
+my $sudo_initial_prompt_re = qr/^.*?(\$|#) $/m;
 
 # Create a random text delimiter
 # We want chars A-Z, a-z, 0-9, _- => 26+26+10 = 64 different characters.
