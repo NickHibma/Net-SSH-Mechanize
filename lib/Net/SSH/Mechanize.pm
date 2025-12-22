@@ -35,7 +35,7 @@ has 'session' => (
     default => sub {
         shift->_create_session;
     },
-    handles => [qw(login login_async capture capture_async sudo_capture sudo_capture_async logout)],
+    handles => [qw(login login_async is_logged_in capture capture_async sudo_capture sudo_capture_async logout)],
 );
 
 # The log-in timeout limit in seconds
