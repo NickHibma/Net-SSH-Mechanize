@@ -155,7 +155,7 @@ parameters.  Valid parameter keys are:
 
 =item C<host>
 
-The hostname to connect to (a scalar string).  Either this or C<connection_params> must
+The host to connect to (a scalar string).  Either this or C<connection_params> must
 be supplied.
 
 =item C<user>

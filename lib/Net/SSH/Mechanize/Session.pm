@@ -463,7 +463,7 @@ attribute (which is an instance of this class).
 
    use Net::SSH::Mechanize;
 
-   my $mech = Net::SSH::Mechanize->new(hostname => 'somewhere');
+   my $mech = Net::SSH::Mechanize->new(host => 'somewhere');
 
    my $session = $mech->session;
    # ...

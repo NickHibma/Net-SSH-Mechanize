@@ -144,21 +144,21 @@ Net::SSH::Mechanize::Multi - parallel ssh invocation
         # Net::SSH::Mechanize::ConnectParams instance (or subclass
         # thereof)
         connection1 => Net::SSH::Mechanize::ConnectParams->new(
-            hostname => 'host1.com',
+            host => 'host1.com',
         ),
 
         # This defines it using a hashref of constructor parameters
         # for Net::SSH::Mechanize
         connection2 => {
             user => 'joe',
-            hostname => 'host1.com',
+            host => 'host1.com',
             login_timeout => 60,
         },
         
         # This passes a Net::SSH::Mechanize instance directly
         connection3 => Net::SSH::Mechanize->new(
             user => 'joe',
-            hostname => 'host2.com',
+            host => 'host2.com',
             login_timeout => 60,
         ),
 

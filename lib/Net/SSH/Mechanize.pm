@@ -117,8 +117,8 @@ sub _create_session {
 #                $session->child_pid, $session->_error_event, $session->_error_event->ready? "ready":"unready"; #DB
             my $stderr = $done->delegate('stderr');
             my $errtext = $stderr->rbuf;
-            my $msg = sprintf "child PID %d terminated unexpectedly with exit value %d",
-                $session->child_pid, $done->exit_value, $errtext? "\n$errtext" : '';
+            my $msg = sprintf "child PID %d terminated unexpectedly with exit value %d%s",
+                $session->child_pid, $done->exit_value, $errtext? "\n".$errtext : '';
             $session->_error_event->send($msg);
             undef $session;
         },
@@ -315,11 +315,11 @@ C<password>), will be ignored.
 
 If this is absent, a C<Net::SSH::Mechanize::ConnectParams> instance is
 constructed from any other individual connection parameters - the
-minimum which must be supplied is C<hostname>.  See below.
+minimum which must be supplied is C<host>.  See below.
 
 =item C<host>
 
-The hostname to connect to.  Either this or C<connection_params> must
+The host to connect to.  Either this or C<connection_params> must
 be supplied.
 
 =item C<user>
