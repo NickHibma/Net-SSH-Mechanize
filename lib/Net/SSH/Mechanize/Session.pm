@@ -231,7 +231,7 @@ sub login {
     my ($cv) = shift->login_async(@_);
 #        printf "$Coro::current about to call recv\n"; # DB 
     my $v = ($cv->recv)[1];
-#        printf "$Coro::current about to called recv\n"; # DB 
+#        printf "$Coro::current called recv\n"; # DB 
     return $v;
 }
 
