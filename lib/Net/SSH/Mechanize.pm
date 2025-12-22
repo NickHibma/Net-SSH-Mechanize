@@ -246,9 +246,9 @@ the scenes.
     # Accessing ->capture calls ->login automatically.
     my $condvar = AnyEvent->condvar;
     $ssh->login_async->cb(sub {
-        my ($session) = shift->recv;
+        my ($stdin_handle, $session) = shift->recv;
         $session->capture_async("id")->cb(sub {
-            my ($stderr_handle, $result) = shift->recv;
+            my ($stdin_handle, $result) = shift->recv;
 
             $condvar->send($result);
         });
