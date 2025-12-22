@@ -47,20 +47,34 @@ has 'flags' => (
     },
 );
 
+sub ssh_options_ordered {
+    my $self = shift;
+
+    # For now this returns a sorted list of the options keys, but this might be
+    # changed in the future depending on ordering requirements of certain
+    # options.
+
+    return sort $self->ssh_options;
+}
+
 sub ssh_cmd {
     my $self = shift;
 
-    my @cmd = ('-t', $self->host, 'sh');
+    my @cmd = ('/usr/bin/ssh');
 
-    unshift @cmd, defined $self->user? ('-l', $self->user) : ();
-    unshift @cmd, defined $self->port? ('-p', $self->port) : ();
-    foreach my $sshFlag ($self->get_flags()) {
-        unshift @cmd, '-' . $sshFlag;
-    }
-    foreach my $sshOption ($self->ssh_options()) {
-        unshift @cmd, '-o ' . $sshOption . '=' . $self->get_option($sshOption);
-    }
-    unshift @cmd, '/usr/bin/ssh';
+    push @cmd, '-t';
+    push @cmd, '-p', $self->port,
+        if defined $self->port;
+    push @cmd, '-l', $self->user
+        if defined $self->user;
+    push @cmd, '-' . $_
+        for $self->get_flags;
+    push @cmd, '-o', $_ . '=' . $self->get_option($_)
+        for $self->ssh_options_ordered;
+
+    push @cmd, $self->host;
+    push @cmd, 'sh';
+
     return @cmd;
 }
 
@@ -85,7 +99,7 @@ This equates to C</usr/bin/ssh -t somewhere.com sh>:
         host => 'somewhere.com',
     );
 
-This equates to C</usr/bin/ssh -l someone -p 999 -t somewhere.com sh>:
+This equates to C</usr/bin/ssh -t -p 999 -l someone somewhere.com sh>:
 
     my $all_params = Net::SSH::Mechanize::ConnectParams->new(
         host => 'somewhere.com',
@@ -94,13 +108,19 @@ This equates to C</usr/bin/ssh -l someone -p 999 -t somewhere.com sh>:
         password => 'secret',
     );
 
-This ssh syntax connects as above, but without public key checks:
+To silence ssh add the flags parameter C<-q>:
 
-C</usr/bin/ssh -o StrictHostKeyChecking=no -o>
-  C<  UserKnownHostsFile=/dev/null -o PubkeyAuthentication=yes>
-  C<  -q -x -a -p 999 -l someone -t somewhere.com sh>
+    my $all_params = Net::SSH::Mechanize::ConnectParams->new(
+        host => 'somewhere.com',
+        user => 'someone',
+        port => 999,
+        password => 'secret',
+        flags => [ 'q' ],
+    );
 
-Respresented below as:
+To connect without public key checks C</usr/bin/ssh -t -p 999 -l someone -o
+StrictHostKeyChecking=no -o UserKnownHostsFile=none somewhere.com sh>, add
+the options parameter:
 
     my $all_params = Net::SSH::Mechanize::ConnectParams->new(
         host => 'somewhere.com',
@@ -108,11 +128,20 @@ Respresented below as:
         port => 999,
         password => 'secret',
         options => {
-            "UserKnownHostsFile"    => "/dev/null",
-            "PubkeyAuthentication"  => "yes",
-            "StrictHostKeyChecking" => "no"
+            UserKnownHostsFile    => 'none',
+            StrictHostKeyChecking => 'no'
         },
-        flags => [ "a", "x", "q" ],
+    );
+
+To connect using public key authentication use the following code:
+
+    my $all_params = Net::SSH::Mechanize::ConnectParams->new(
+        host => 'somewhere.com',
+        user => 'someone',
+        port => 999,
+        options => {
+            PubkeyAuthentication => 'yes',
+        },
     );
 
 =head1 CLASS METHODS
