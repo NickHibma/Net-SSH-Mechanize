@@ -138,6 +138,7 @@ sub _create_session {
     $session->login_timeout($self->login_timeout);
 
     # turn off terminal echo
+    $session->delegate('pty')->handle->fh->slave->set_raw;
     $session->delegate('pty')->handle->fh->set_raw;
 
     # Rebless $session into a subclass of AnyEvent::Subprocess::Running
