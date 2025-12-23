@@ -45,6 +45,12 @@ has 'login_timeout' => (
     default => 30,
 );
 
+# In some cases it is useful to set the width and height of the TTY the remote
+# is connected to, e.g. to prevent line breaks in the command when echoed.
+has [ 'tty_width', 'tty_height' ] => (
+    is => 'rw',
+    isa => 'Int',
+);
 
 # This wrapper exists to map @connection_params into a
 # Net::SSH::Mechanize::ConnectParams instance, if one is not supplied
@@ -137,9 +143,13 @@ sub _create_session {
     # And set the login_timeout
     $session->login_timeout($self->login_timeout);
 
-    # turn off terminal echo
+    # Turn off terminal echo
     $session->delegate('pty')->handle->fh->slave->set_raw;
     $session->delegate('pty')->handle->fh->set_raw;
+
+    # Configure tty height and width if requested to do so
+    $session->delegate('pty')->handle->fh->slave->set_winsize($self->tty_width, $self->tty_height)
+        if $self->tty_width and $self->tty_height;
 
     # Rebless $session into a subclass of AnyEvent::Subprocess::Running
     # which just supplies extra methods we need.
@@ -348,6 +358,12 @@ when the remote end isn't answering, or isn't answering in a way that
 will allow C<Net::SSH::Mechanize> to terminate.
 
 The default is 30.
+
+=item C<tty_width>, C<tty_height>
+
+Provide the width and height for the pty created. This prevents
+echoed long commands from being split into multiple lines, making it
+more difficult to skip the command when processing the result.
 
 =back
 
