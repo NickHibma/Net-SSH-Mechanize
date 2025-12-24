@@ -18,7 +18,7 @@ our @CARP_NOT = qw(AnyEvent AnyEvent::Subprocess Coro::AnyEvent);
 #$AnyEvent::Log::FILTER->level("fatal");
 
 
-my @connection_params = qw(host user port password);
+my @connection_params = qw(host user port password options flags);
 
 # An object which defines a connection.
 has 'connection_params' => (
